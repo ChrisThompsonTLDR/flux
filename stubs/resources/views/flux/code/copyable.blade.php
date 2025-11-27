@@ -18,7 +18,13 @@ $classes = Flux::classes()
         size="{{ $size }}"
         square
         x-data="{ copied: false }"
-        x-on:click="copied = ! copied; navigator.clipboard && navigator.clipboard.writeText($el.closest('[data-flux-code]').querySelector('code').textContent); setTimeout(() => copied = false, 2000)"
+        x-on:click="
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText($el.closest('[data-flux-code]').querySelector('code').textContent)
+                    .then(() => { copied = true; setTimeout(() => copied = false, 2000); })
+                    .catch(() => { copied = false; });
+            }
+        "
         x-bind:data-copyable-copied="copied"
         aria-label="{{ __('Copy to clipboard') }}"
         class="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700/50"

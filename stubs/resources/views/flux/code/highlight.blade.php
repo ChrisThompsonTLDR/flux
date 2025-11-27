@@ -24,13 +24,14 @@ $classes = Flux::classes()
 
         <flux:menu>
             @foreach ($languages as $lang)
+                @php $safeLang = preg_replace('/[^a-zA-Z0-9_-]/', '', $lang); @endphp
                 <flux:menu.item
                     x-on:click="
                         const codeBlock = $el.closest('[data-flux-code]');
                         const codeEl = codeBlock.querySelector('code');
-                        codeEl.className = codeEl.className.replace(/language-\w+/g, '').trim();
-                        codeEl.classList.add('language-{{ $lang }}');
-                        codeBlock.dataset.language = '{{ $lang }}';
+                        codeEl.className = codeEl.className.replace(/language-[\w-]+/g, '').trim();
+                        codeEl.classList.add('language-{{ $safeLang }}');
+                        codeBlock.dataset.language = '{{ $safeLang }}';
                         if (window.hljs) { hljs.highlightElement(codeEl); }
                         else if (window.Prism) { Prism.highlightElement(codeEl); }
                     "
