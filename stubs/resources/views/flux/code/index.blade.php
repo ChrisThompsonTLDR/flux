@@ -96,6 +96,13 @@ $codeClasses = Flux::classes()
                  }
              @endif
          },
+         destroy() {
+             // Clean up TipTap editor instance to prevent memory leaks
+             if (this.editor) {
+                 this.editor.destroy();
+                 this.editor = null;
+             }
+         },
          toggleHighlight() {
              this.highlightEnabled = !this.highlightEnabled;
              const codeEl = this.$el.querySelector('code');
