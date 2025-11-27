@@ -69,8 +69,9 @@ $codeClasses = Flux::classes()
                     const { Editor } = window.useEditor();
                     const { CodeBlock } = window.useEditor.extensions || {};
                     
-                    // Build extensions array, only including CodeBlock if it exists
-                    const extensions = [];
+                    // Build extensions array with required base extensions
+                    const { Document, Paragraph, Text } = window.useEditor.extensions || {};
+                    const extensions = [Document, Paragraph, Text].filter(Boolean);
                     if (CodeBlock) {
                         extensions.push(
                             CodeBlock.configure({
@@ -106,12 +107,19 @@ $codeClasses = Flux::classes()
          toggleHighlight() {
              this.highlightEnabled = !this.highlightEnabled;
              const codeEl = this.$el.querySelector('code');
-             if (codeEl && this.highlightEnabled) {
+             if (!codeEl) return;
+             
+             if (this.highlightEnabled) {
                  if (window.hljs) {
                      hljs.highlightElement(codeEl);
                  } else if (window.Prism) {
                      Prism.highlightElement(codeEl);
                  }
+             } else {
+                 // Remove highlighting by resetting text content
+                 const text = codeEl.textContent;
+                 codeEl.className = codeEl.className.replace(/language-[\w-]+/g, '').trim();
+                 codeEl.textContent = text;
              }
          },
          toggleTabsSpaces() {
