@@ -25,13 +25,15 @@ $preClasses = Flux::classes()
     ->add('text-zinc-100')
     ;
 
+$safeLanguage = $language ? preg_replace('/[^a-zA-Z0-9_-]/', '', $language) : null;
+
 $codeClasses = Flux::classes()
     ->add('block')
-    ->add($language ? 'language-' . $language : '')
+    ->add($safeLanguage ? 'language-' . $safeLanguage : '')
     ;
 @endphp
 
-<div {{ $attributes->class($classes) }} data-flux-code @if($language) data-language="{{ $language }}" @endif @if($highlight) data-highlight @endif>
+<div {{ $attributes->class($classes) }} data-flux-code @if($safeLanguage) data-language="{{ $safeLanguage }}" @endif @if($highlight) data-highlight @endif>
     <?php if ($highlight): ?>
         <flux:code.highlight :languages="$highlightLanguages ?? ['javascript', 'php', 'html', 'css', 'json', 'bash', 'sql', 'xml', 'yaml', 'markdown']" />
     <?php endif; ?>
