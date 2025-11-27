@@ -64,22 +64,28 @@ $codeClasses = Flux::classes()
          editor: null,
          init() {
              @if($isEditable)
-                 // Initialize TipTap editor with code-block extension
-                 if (typeof window.useEditor !== 'undefined') {
-                     const { Editor } = window.useEditor();
-                     const { CodeBlock } = window.useEditor.extensions || {};
-                     
-                     this.editor = new Editor({
-                         element: this.$refs.editorElement,
-                         extensions: [
-                             CodeBlock?.configure({
-                                 languageClassPrefix: 'language-',
-                                 defaultLanguage: @js($safeLanguage ?? 'plaintext'),
-                                 HTMLAttributes: {
-                                     class: 'code-block-editor'
-                                 }
-                             }) || CodeBlock
-                         ],
+                // Initialize TipTap editor with code-block extension
+                if (typeof window.useEditor !== 'undefined') {
+                    const { Editor } = window.useEditor();
+                    const { CodeBlock } = window.useEditor.extensions || {};
+                    
+                    // Build extensions array, only including CodeBlock if it exists
+                    const extensions = [];
+                    if (CodeBlock) {
+                        extensions.push(
+                            CodeBlock.configure({
+                                languageClassPrefix: 'language-',
+                                defaultLanguage: @js($safeLanguage ?? 'plaintext'),
+                                HTMLAttributes: {
+                                    class: 'code-block-editor'
+                                }
+                            })
+                        );
+                    }
+                    
+                    this.editor = new Editor({
+                        element: this.$refs.editorElement,
+                        extensions: extensions,
                          content: @js($slot->toHtml()),
                          onUpdate: ({ editor }) => {
                              @if($wireModel)
